@@ -18,13 +18,12 @@ import { TextureFormat, ChannelFormulas, ActiveTexture } from './types';
 import { BLPConverter } from './services/blpService';
 import { TGAConverter } from './services/tgaService';
 import { ImageProcessor } from './services/imageProcessor';
-import { analyzeColorChoice } from './services/geminiService';
 
 const PRESETS = [
   { name: '默认 (无改动)', formulas: { r: 'r', g: 'g', b: 'b', a: 'a' } },
-  { name: 'BGR 反转 (BLP1 修正)', formulas: { r: 'b', g: 'g', b: 'r', a: 'a' } },
+  { name: '手动 BGR 修正 (如仍有问题)', formulas: { r: 'b', g: 'g', b: 'r', a: 'a' } },
   { name: '灰度化', formulas: { r: '0.3*r + 0.6*g + 0.1*b', g: '0.3*r + 0.6*g + 0.1*b', b: '0.3*r + 0.6*g + 0.1*b', a: 'a' } },
-  { name: '高对比度 (Hard)', formulas: { r: '(r-128)*1.5+128', g: '(g-128)*1.5+128', b: '(b-128)*1.5+128', a: 'a' } },
+  { name: '高对比度 (Hard)', formulas: { r: '(r-128)*1.5+128', g: '(g-128)*1.5+128', b: '(g-128)*1.5+128', a: 'a' } },
   { name: '红色通道过滤', formulas: { r: 'r > 200 ? 255 : 0', g: 'g', b: 'b', a: 'a' } },
   { name: '反色', formulas: { r: '255-r', g: '255-g', b: '255-b', a: 'a' } },
   { name: 'Alpha 增强', formulas: { r: 'r', g: 'g', b: 'b', a: 'Math.min(255, a*1.2)' } },
@@ -184,9 +183,9 @@ const App: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left: Viewports (Original and Processed) */}
+        {/* Left Section: Image Viewports */}
         <main className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-6 order-2 lg:order-1">
-          {/* Viewport 1: Original */}
+          {/* Viewport 1: Original (Interactive Upload Area) */}
           <div className="bg-slate-900 border border-slate-700/50 rounded-2xl overflow-hidden flex flex-col min-h-[500px] relative">
             <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".blp,.tga,.png,.jpg,.jpeg" className="hidden" />
             <div className="p-4 bg-slate-800/40 border-b border-slate-700/50 flex justify-between items-center">
@@ -261,7 +260,7 @@ const App: React.FC = () => {
           </div>
         </main>
 
-        {/* Right: Algorithm Editor and Presets */}
+        {/* Right Section: Configuration & Presets */}
         <aside className="lg:col-span-4 flex flex-col gap-6 sticky top-8 order-1 lg:order-2">
           {/* Formula Editor */}
           <section className="bg-slate-800/40 p-5 rounded-2xl border border-slate-700/50 shadow-xl">
